@@ -10,13 +10,14 @@ use std::fmt;
 fn main() {
     println!("Week 12: Generics and traits");
 
-    // Try it out once you have implementations working:
-    // let mut s: Stack<i32> = Stack::new();
-    // s.push(1);
-    // s.push(2);
-    // s.push(3);
-    // println!("{}", s);           // requires Display impl
-    // for item in s { println!("{}", item); }  // requires IntoIterator impl
+    let mut s: Stack<i32> = Stack::new();
+    s.push(1);
+    s.push(2);
+    s.push(3);
+    println!("{}", s);
+    for item in s {
+        println!("{}", item);
+    }
 }
 
 // ============================================================================
@@ -90,6 +91,29 @@ impl<T: fmt::Debug> fmt::Display for Stack<T> {
 //
 // Implement the helper struct and then the two trait impls below.
 // ============================================================================
+
+pub struct StackIntoIter<T> {
+    data: std::vec::IntoIter<T>,
+}
+
+impl<T> Iterator for StackIntoIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.data.next_back()
+    }
+}
+
+impl<T> IntoIterator for Stack<T> {
+    type Item = T;
+    type IntoIter = StackIntoIter<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        StackIntoIter {
+            data: self.data.into_iter(),
+        }
+    }
+}
 
 // ============================================================================
 // TESTS: DO NOT MODIFY
